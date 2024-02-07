@@ -3,5 +3,5 @@ COPY . /ticket-service
 COPY requirements.txt /ticket-service
 WORKDIR /ticket-service
 RUN pip install -r requirements.txt
-EXPOSE 8070
+EXPOSE 8060
 CMD ["python3", "ticket-service.py"]
