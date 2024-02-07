@@ -13,58 +13,54 @@ services:
       - ./postgres/:/docker-entrypoint-initdb.d/
     ports:
       - "5432:5432"
-    networks:
-      default:
-        ipv4_address: 10.5.0.2
 
-  gateway:
-    build: src/gateway-service/
-    container_name: gateway-cont
-    restart: on-failure
-    ports:
-      - "8080:8080"
-    networks:
-      default:
-        ipv4_address: 10.5.0.3
-
-  bonus:
-    build: src/bonus-service/
-    container_name: bonus-cont
-    restart: on-failure
-    ports:
-      - "8050:8050"
-    networks:
-      default:
-        ipv4_address: 10.5.0.4
-
-  flight:
-    build: src/flight-service/
-    container_name: flight-cont
-    restart: on-failure
-    ports:
-      - "8060:8060"
-    networks:
-      default:
-        ipv4_address: 10.5.0.5
+# TODO добавить сервисы
 
   ticket:
-    build: src/ticket-service/
-    container_name: ticket-cont
-    restart: on-failure
+    build: ./source_v1/TicketService/
     ports:
       - "8070:8070"
-    networks:
-      default:
-        ipv4_address: 10.5.0.6
+    restart: on-failure
+    volumes:
+      - ./source_v1/TicketService/:/TicketService/
+    command: >
+      bash -c "python manage.py migrate
+      && python manage.py runserver 0.0.0.0:8070"
 
+  flight:
+    build: ./source_v1/FlightService/
+    ports:
+      - "8060:8060"
+    restart: on-failure
+    volumes:
+      - ./source_v1/FlightService/:/FlightService/
+    command: >
+      bash -c "python manage.py migrate
+      && python manage.py loaddata ./init_data.json
+      && python manage.py runserver 0.0.0.0:8060"
+
+  bonus:
+    build: ./source_v1/BonusService/
+    ports:
+      - "8050:8050"
+    restart: on-failure
+    volumes:
+      - ./source_v1/BonusService/:/BonusService/
+    command: >
+      bash -c "python manage.py migrate
+      && python manage.py loaddata ./init_data.json
+      && python manage.py runserver 0.0.0.0:8050"
+
+  gateway:
+    build: ./source_v1/GatewayService/
+    ports:
+      - "8080:8080"
+    restart: on-failure
+    volumes:
+      - ./source_v1/GatewayService/:/GatewayService/
+    command: >
+      bash -c "python manage.py migrate
+      && python manage.py runserver 0.0.0.0:8080"
 
 volumes:
   db-data:
-
-networks:
-  default:
-    driver: bridge
-    ipam:
-     config:
-       - subnet: 10.5.0.0/16
-         gateway: 10.5.0.1
