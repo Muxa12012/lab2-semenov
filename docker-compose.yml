@@ -1,5 +1,7 @@
 version: "3"
 services:
+  version: "3"
+services:
   postgres:
     image: library/postgres:13
     container_name: postgres
@@ -13,58 +15,34 @@ services:
       - ./postgres/:/docker-entrypoint-initdb.d/
     ports:
       - "5432:5432"
-    networks:
-      default:
-        ipv4_address: 10.5.0.2
 
   gateway:
-    build: src/gateway-service/
-    container_name: gateway-cont
+    build: lab2/Gateway/
+    container_name: gateway
     restart: on-failure
     ports:
       - "8080:8080"
-    networks:
-      default:
-        ipv4_address: 10.5.0.3
-
-  bonus:
-    build: src/bonus-service/
-    container_name: bonus-cont
-    restart: on-failure
-    ports:
-      - "8050:8050"
-    networks:
-      default:
-        ipv4_address: 10.5.0.4
 
   flight:
-    build: src/flight-service/
-    container_name: flight-cont
+    build: lab2/Flights/
+    container_name: flight
     restart: on-failure
     ports:
       - "8060:8060"
-    networks:
-      default:
-        ipv4_address: 10.5.0.5
-
+      
   ticket:
-    build: src/ticket-service/
-    container_name: ticket-cont
+    build: lab2/Tickets/
+    container_name: ticket
     restart: on-failure
     ports:
       - "8070:8070"
-    networks:
-      default:
-        ipv4_address: 10.5.0.6
 
+  bonus:
+    build: lab2/Bonuses/
+    container_name: bonus
+    restart: on-failure
+    ports:
+      - "8050:8050"
 
 volumes:
   db-data:
-
-networks:
-  default:
-    driver: bridge
-    ipam:
-     config:
-       - subnet: 10.5.0.0/16
-         gateway: 10.5.0.1
