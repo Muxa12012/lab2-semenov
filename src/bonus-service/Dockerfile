@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3.9
 COPY . /bonus-service
 COPY requirements.txt /bonus-service
 WORKDIR /bonus-service
